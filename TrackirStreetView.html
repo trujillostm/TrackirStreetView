@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<!-- Sergio Trujillo 2022 -->
+<!-- sergiotrujillo@gmail.com -->
+<!-- You need to run Trackir software before Python script -->
+<!-- You need TrackClip for head tracking, not tested with TrackClipPro -->
+
+	<!-- Cabeza -->
+	<head>
+		<meta charset="utf-8">
+		<title>Trackir Street View</title>		
+		<script type = "text/javascript">
+			
+			//global
+			var msg;
+	  
+			function WebSocketTest() {
+			   
+			   if ("WebSocket" in window) {
+   
+				  //alert("WebSocket is supported by your Browser!");
+				  
+				  //Open
+				  var ws = new WebSocket("ws://localhost:5000");				
+				  ws.onopen = function() {                  
+					 // Web Socket is connected, send data using send()
+					 //ws.send("Message to send");
+					 //alert("Message is sent...");
+				  };
+				   
+				  ws.onmessage = function (event) {
+					  msg = JSON.parse(event.data);                  
+				      //document.querySelector('#yaw').innerText = msg.yaw;					  
+					  //document.querySelector('#pitch').innerText = msg.pitch;
+					  //document.querySelector('#roll').innerText = msg.roll;
+					  document.getElementById("yawAngle").innerHTML = msg.yaw;
+					  document.getElementById("pitchAngle").innerHTML = msg.pitch;
+					  document.getElementById("roll").innerHTML = msg.roll;
+					  						
+						pov = {
+							heading: msg.yaw, //+links[0].heading,
+							pitch: msg.pitch
+						};						
+						
+						
+						window.panorama.setPov(pov);
+					  
+
+               	  };
+				   
+				  //Close
+					 ws.onclose = function() {                  
+					 // websocket is closed.
+					 //alert("Connection is closed..."); 
+				  };
+				  
+			   } else {
+				 
+				  // The browser doesn't support WebSocket
+				  //alert("WebSocket NOT supported by your Browser!");
+				  
+			   }
+			}
+		 </script>
+	</head>
+	
+	<!-- Cuerpo -->
+	<body onload="initialize();WebSocketTest();">
+		
+		<!-- Trackir -->		
+		<div id = "yawAngle" style="position:absolute; left:0px; top: 550px; width: 100px; height: 10px;">
+			<p>Yaw</p>
+		</div>		
+		<div id = "pitchAngle" style="position:absolute; left:0px; top: 600px; width: 100px; height: 10px;">
+			<p>Pitch</p>
+		</div>
+		<div id = "roll" style="position:absolute; left:0px; top: 650px; width: 100px; height: 10px;">
+			<p>Roll</p>
+		</div>		
+		
+		<!-- Zonas -->
+		<div id="pano" style="position:absolute; left:50px; top: 0px; width: 95%; height: 100%;">
+		<!--div id="mapa" style="position:absolute; left:10px; top: 10px; width: 300px; height: 300px"></div-->
+		
+		<!-- Scripts -->
+		<script id="google-maps" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8lqpLqKVuHAPm8TV-MbZ5NbQGE4EtpvQ&v=3.exp"></script>				
+
+		<script type="text/javascript">
+
+			function initialize() {
+			
+				panorama = new google.maps.StreetViewPanorama(
+				document.getElementById("pano"),
+				{
+					position: { 
+						lat: 37.867846, 
+						lng: -122.2543636 },
+					pov: { 
+						heading: 0, 
+						pitch: 0 },
+					zoom: 1,
+					addressControl:false,
+					addressControlOptions: {
+						position: google.maps.ControlPosition.BOTTOM_CENTER,},
+					navigationControl: false,
+					linksControl: false,
+					zoomControl: false,
+					panControl: false,
+					enableCloseButton: false,
+				}
+			  );
+			  
+				/*
+				google.maps.event.addListener(panorama, 'links_changed', 
+					function() {
+						var links =  panorama.getLinks();
+						panorama.setPov({
+							heading: links[0].heading,
+							pitch: 0,
+							zoom: 1
+						});
+					});
+				*/
+									
+			  
+			}
+
+		</script>
+				
+		<!-- Si lo he puesto al final será por algo -->
+		<script id="controls" type="text/javascript" src="scripts/controls.js"></script>
+		
+	</body>
+</html>
+
